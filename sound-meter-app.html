@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sound Level Meter</title>
+    <style>
+      #volumeMeter {
+        width: 300px;
+        height: 20px;
+      }
+      #dbLevel {
+        font-size: 24px;
+        margin-top: 20px;
+      }
+      #sineGraph {
+        width: 600px;
+        height: 200px;
+        margin-top: 20px;
+      }
+      #recordingIndicator {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <meter id="volumeMeter" min="0" max="1"></meter>
+    <div id="dbLevel"></div>
+    <canvas id="sineGraph" width="600" height="200"></canvas>
+    <button id="startButton">Start Recording</button>
+    <button id="stopButton">Stop Recording</button>
+    <div id="timer"></div>
+    <div id="recordingIndicator" style="display: none;">Recording...</div>
+    <script>
+        const volumeMeter = document.getElementById('volumeMeter');
+        const dbLevelEl = document.getElementById('dbLevel');
+        const sineGraphCtx = document.getElementById('sineGraph').getContext('2d');
+        const timer = document.getElementById('timer');
+        let noiseFloor = 70.0; // Offset noise floor at 1 kHz
+        let recording = false;
+        let audioChunks = [];
+        let mediaRecorder;
+        let stream;
+        let startTime = null;
+        
+        const updateVolumeMeter = async () => {
+          stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+          const audioContext = new AudioContext();
+          const mediaStreamAudioSourceNode = audioContext.createMediaStreamSource(stream);
+          const analyserNode = audioContext.createAnalyser();
+          mediaStreamAudioSourceNode.connect(analyserNode);
+          analyserNode.smoothingTimeConstant = 0.8;
+        
+          const soundData = new Float32Array(analyserNode.fftSize);
+          const onFrame = () => {
+            analyserNode.getFloatTimeDomainData(soundData);
+            let sumSquares = 0.0;
+            for (const amplitude of soundData) { sumSquares += amplitude * amplitude; }
+            volumeMeter.value = Math.sqrt(sumSquares / soundData.length); // RMS value of sound wave
+            console.log(volumeMeter.value);
+            let dBReading = `${Math.round(noiseFloor + (20 * Math.log10(volumeMeter.value) * 10) / 10)} dB`;
+            dbLevelEl.innerText = dBReading; // Noise floor to calculate noise relative to a "silent room"
+            
+            // Clear canvas
+            sineGraphCtx.clearRect(0, 0, sineGraphCtx.canvas.width, sineGraphCtx.canvas.height);
+        
+            // Draw sine graph
+            sineGraphCtx.beginPath();
+            sineGraphCtx.strokeStyle = '#000';
+            sineGraphCtx.lineWidth = 2;
+            sineGraphCtx.moveTo(0, sineGraphCtx.canvas.height / 2);
+            for (let i = 0; i < soundData.length; i++) {
+              const x = i / soundData.length * sineGraphCtx.canvas.width;
+              const y = (soundData[i] + 1) / 2 * sineGraphCtx.canvas.height;
+              sineGraphCtx.lineTo(x, y);
+            }
+            sineGraphCtx.stroke();
+        
+            if (recording) {
+              let currentTime = new Date().getTime();
+              let elapsedTime = (currentTime - startTime) / 1000; // Convert milliseconds to seconds
+              let hours = Math.floor(elapsedTime / 3600);
+              let minutes = Math.floor((elapsedTime % 3600) / 60);
+              let seconds = Math.floor(elapsedTime % 60);
+              timer.innerText = `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+              audioChunks.push([elapsedTime, dBReading]);
+            }
+        
+            window.requestAnimationFrame(onFrame);
+          };
+          window.requestAnimationFrame(onFrame);
+        };
+        
+        const saveAudio = () => {
+          const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+          const audioUrl = URL.createObjectURL(audioBlob);
+          const audio = new Audio(audioUrl);
+          audio.play();
+        
+          const currentDate = new Date().toISOString().split('T')[0];
+          const wavLink = document.createElement('a');
+          wavLink.href = audioUrl;
+          wavLink.download = `sound_data_${currentDate}.wav`;
+          wavLink.click();
+        };
+        
+        document.getElementById('startButton').addEventListener('click', () => {
+          recording = true;
+          audioChunks = [];
+          startTime = new Date().getTime(); // Reset the start time
+          updateVolumeMeter();
+          mediaRecorder = new MediaRecorder(stream);
+          mediaRecorder.start();
+          mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+          mediaRecorder.onstop = () => {
+            let audioBlob = new Blob(audioChunks);
+            let audioUrl = URL.createObjectURL(audioBlob);
+            let audio = new Audio(audioUrl);
+            audio.play();
+            let csvData = new Blob([['Time (s)', 'Relative Sound Level (dB)'].join(',') + '\n' + audioChunks.join('\n')], { type: 'text/csv' });          
+            let currentDate = new Date().toISOString().split('T')[0]; // Get today's date in the format YYYY-MM-DD
+            let csvUrl = URL.createObjectURL(csvData);
+            let csvLink = document.createElement('a');
+            csvLink.href = csvUrl;
+            csvLink.download = `sound_data_${currentDate}.csv`;
+            csvLink.click();
+          };
+          document.getElementById('recordingIndicator').style.display = 'block';
+        });
+        
+        document.getElementById('stopButton').addEventListener('click', () => {
+          recording = false;
+          document.getElementById('recordingIndicator').style.display = 'none';
+          mediaRecorder.stop();
+          saveAudio();
+
+        });
+        
+        updateVolumeMeter();
+        
+    </script>
+  </body>
+</html>
