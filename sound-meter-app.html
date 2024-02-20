@@ -56,7 +56,7 @@
             for (const amplitude of soundData) { sumSquares += amplitude * amplitude; }
             volumeMeter.value = Math.sqrt(sumSquares / soundData.length); // RMS value of sound wave
             console.log(volumeMeter.value);
-            let dBReading = `${Math.round(noiseFloor + (20 * Math.log10(volumeMeter.value) * 10) / 10)} dB`;
+            let dBReading = `${Math.round((20 * Math.log10(volumeMeter.value) * 10) / 10)} dBFS`;
             dbLevelEl.innerText = dBReading; // Noise floor to calculate noise relative to a "silent room"
             
             // Clear canvas
@@ -115,7 +115,7 @@
             let audioUrl = URL.createObjectURL(audioBlob);
             let audio = new Audio(audioUrl);
             audio.play();
-            let csvData = new Blob([['Time (s)', 'Relative Sound Level (dB)'].join(',') + '\n' + audioChunks.join('\n')], { type: 'text/csv' });          
+            let csvData = new Blob([['Time (s)', 'Relative Sound Level (dBFS)'].join(',') + '\n' + audioChunks.join('\n')], { type: 'text/csv' });          
             let currentDate = new Date().toISOString().split('T')[0]; // Get today's date in the format YYYY-MM-DD
             let csvUrl = URL.createObjectURL(csvData);
             let csvLink = document.createElement('a');
