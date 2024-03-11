@@ -34,15 +34,15 @@ document.addEventListener('DOMContentLoaded', async function() {
             let sumSquares = 0.0;
             for (const amplitude of soundData) { sumSquares += amplitude * amplitude; }
             volumeMeter.value = Math.sqrt(sumSquares / soundData.length); // RMS value of sound wave
-            let dBReading = `${Math.round((20 * Math.log10(volumeMeter.value) * 10) / 10)}`;
+            let dBReading = `${(20 * Math.log10(volumeMeter.value)).toFixed(2)}`; // Display dBFS to 2 decimal places
             dbLevel.innerText = dBReading;
             
             // Calculate average dBFS reading over the last second
             let currentTime = new Date().getTime();
-            if (currentTime - intervalStartTime >= 1000) {
+            if (currentTime - intervalStartTime >= 500) {
                 intervalStartTime = currentTime;
                 if (avgDBCount > 0) {
-                    avgdbLevel.innerText = `${(avgDBSum / avgDBCount).toFixed(1)}`;
+                    avgdbLevel.innerText = `${(avgDBSum / avgDBCount).toFixed(2)}`;
                 } else {
                     avgdbLevel.innerText = "No data";
                 }
