@@ -6,7 +6,7 @@ body {
   }
   
   h1, #heading {
-    padding: 20px 0;
+    padding: 10px 0;
     background-color: lightblue;
     color: #fff;
     margin: 0;
@@ -27,16 +27,33 @@ body {
     color: #333;
   }
   
-h3{
+  h2{
     margin-top:5px;
-    margin-bottom: 5px;
-    color:#333;
-}
+  }
+
+  #volumeTitle{
+    margin-left:0px;
+  }
+  h3{
+      margin-top:5px;
+      margin-bottom: 5px;
+      color:#333;
+  }
   
   .section {
     display: flex;
     justify-content: space-between; /* Adjust alignment as needed */
-    margin-bottom: 20px;
+  }
+  #volumeMeter{
+    width: 40%; /* Adjust width as needed */
+    height:20px;
+  }
+  #sineGraph {
+    width: 45%; /* Adjust width as needed */
+    height:70px;
+  }
+  #volumeMeter {
+    margin-right: 10px; /* Adjust spacing between elements */
   }
   
   .measurement {
@@ -56,16 +73,27 @@ h3{
   
   meter {
     margin-top: 20px;
-    width: 85%;
+    width: 50%;
     height: 20px;
   }
   
   canvas {
     display: block;
-    margin: 20px auto;
     max-width: 100%;
   }
+
+  #videoWrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 20%; /* Ensure the wrapper takes the full height of the container */
+  }
   
+  #webcam {
+    width: 400px; /* Adjust width as needed */
+    height: auto; /* Let the height adjust automatically based on the width */
+    padding: 10px; /* Optional: Add padding for spacing */
+  }
   #timer {
     text-align: center;
     font-size: 36px; /* Increased font size */
@@ -77,15 +105,29 @@ h3{
   #recordingIndicator {
     text-align: center;
     display: none;
-    margin-bottom: 20px;
   }
   
-  #btnContainer {
+  #btnContainer,#processContainer {
     text-align: center; /* Center the content horizontally */
-    margin-top: 20px; /* Add top margin for spacing */
-}
+    margin-top: 10px; /* Add top margin for spacing */
+  }
 
-
+  p{
+    text-align: center;
+  }
+  input{
+    margin-left: 10px;
+    font-family: monospace;
+  }
+  #processButton{
+    background-color: darkslategray;
+  }
+  #overallAverage{
+    margin-top: 10px;
+    font-weight: bolder;
+    text-align: center;
+    font-size: large;
+  }
   #startButton {
     background-color: green; /* Change start button color to green */
   }
@@ -98,7 +140,6 @@ h3{
     font-family: monospace;
     display: inline-block; /* Display buttons inline */
     justify-content: center;
-    margin: 10px; /* Add margin to separate the buttons */
     padding: 10px 20px;
     color: #fff;
     border: none;

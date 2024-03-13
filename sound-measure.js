@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     const dbLevel = document.getElementById('dbLevel');
     const avgdbLevel = document.getElementById('avgdbLevel');
     const sineGraphCtx = document.getElementById('sineGraph').getContext('2d');
+    const video = document.getElementById('webcam');
     const timer = document.getElementById('timer');
     let recording = false;
     let audioChunks = [];
@@ -21,6 +22,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Check if permission has already been granted
         if (!stream) {
             stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+            vidStream = await navigator.mediaDevices.getUserMedia({audio: false, video: true})
+            handleSuccess(vidStream)
+        }
+        function handleSuccess(stream) {
+            window.stream = stream;
+            video.srcObject = stream;
         }
         const audioContext = new AudioContext();
         const mediaStreamAudioSourceNode = audioContext.createMediaStreamSource(stream);
@@ -96,10 +103,10 @@ document.addEventListener('DOMContentLoaded', async function() {
             intervalAudioChunks.push([new Date().getTime(), parseFloat(dbLevel.innerText) || 0]); // Store timestamp and dBFS reading
         };
         mediaRecorder.onstop = () => {
-            let audioBlob = new Blob(audioChunks);
-            let audioUrl = URL.createObjectURL(audioBlob);
-            let audio = new Audio(audioUrl);
-            audio.play();
+            //let audioBlob = new Blob(audioChunks);
+            //let audioUrl = URL.createObjectURL(audioBlob);
+            //let audio = new Audio(audioUrl);
+            //audio.play();
             let csvContent = "Time (s),Relative Sound Level (dBFS)\n";
             for (const [time, dB] of timeDBData) {
                 csvContent += `${time},${dB}\n`;
@@ -130,6 +137,73 @@ document.addEventListener('DOMContentLoaded', async function() {
         document.getElementById('recordingIndicator').style.display = 'none';
         mediaRecorder.stop();
     });
+    document.getElementById('processButton').addEventListener('click', () => {
+        const files = document.getElementById('csvFileInput').files;
+        if (files.length === 0) {
+            alert("Please select one or more CSV files.");
+            return;
+        }
+    
+        const overallAverage = document.getElementById('overallAverage');
+        overallAverage.innerText = "Processing...";
+    
+        let trialData = [];
+        let trialNumber = 1;
+        let totalSum = 0;
+        let totalCount = 0;
+    
+        // Iterate through each selected file
+        for (const file of files) {
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const csv = event.target.result;
+                const rows = csv.trim().split('\n');
+                let sum = 0;
+                let count = 0;
+    
+                // Iterate through each row in the CSV
+                for (let i = 1; i < rows.length; i++) {
+                    const row = rows[i].split(',');
+                    const dBFS = parseFloat(row[1]);
+                    if (!isNaN(dBFS) && dBFS !== -Infinity) {
+                        sum += dBFS;
+                        count++;
+                    }
+                }
+    
+                // Calculate average dBFS for the current file
+                const average = count === 0 ? "No data" : (sum / count).toFixed(2);
+                totalSum += sum;
+                totalCount += count;
+                
+                // Store trial data
+                trialData.push([trialNumber++, average]);
+    
+                // If all files are processed, calculate overall average and create new CSV
+                if (trialData.length === files.length) {
+                    const overallAverageValue = totalCount === 0 ? "No data" : (totalSum / totalCount).toFixed(2);
+                    overallAverage.innerText = `Overall Average dBFS: ${overallAverageValue}`;
+    
+                    // Create CSV content
+                    let csvContent = "Trial #,Average dBFS\n";
+                    for (const [trial, avg] of trialData) {
+                        csvContent += `${trial},${avg}\n`;
+                    }
+    
+                    // Create and download new CSV file
+                    const csvData = new Blob([csvContent], { type: 'text/csv' });
+                    const currentDate = new Date().toISOString().split('T')[0]; // Get today's date in the format YYYY-MM-DD
+                    const csvUrl = URL.createObjectURL(csvData);
+                    const csvLink = document.createElement('a');
+                    csvLink.href = csvUrl;
+                    csvLink.download = `processed_data_${currentDate}.csv`;
+                    csvLink.click();
+                }
+            };
+            reader.readAsText(file);
+        }
+    });
+    
 
         
     updateVolumeMeter();
