@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     let avgDBSum = 0;
     let avgDBCount = 0;
     let timeDBData = [];
+    let offset = 103.5;
 
     // Function to update volume meter, dB level, and sine graph
     const updateVolumeMeter = async () => {
@@ -41,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             let sumSquares = 0.0;
             for (const amplitude of soundData) { sumSquares += amplitude * amplitude; }
             volumeMeter.value = Math.sqrt(sumSquares / soundData.length); // RMS value of sound wave
-            let dBReading = `${(20 * Math.log10(volumeMeter.value)).toFixed(2)}`; // Display dBFS to 2 decimal places
+            let dBReading = `${(20 * Math.log10(volumeMeter.value)+offset).toFixed(2)}`; // Display dBFS to 2 decimal places
             dbLevel.innerText = dBReading;
             
             // Calculate average dBFS reading over the last second

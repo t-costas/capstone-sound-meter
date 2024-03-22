@@ -9,7 +9,7 @@
     <div id="heading">
       <h1>ARL-MLS1: Sound Meter</h1>
     </div>
-    <p>This web application measures the dBFS (or decibels relative to full scale) of the environment. The measurement microphone takes in an  analog signal which is converted using WebAudio API into a pulse code modulation. The RMS is then calculated to determine the volume meter value and by using the formula 20*log(volume), the dBFS value of the noise source in the digital environment is defined. </p>
+    <p>This web application measures the dBFS (or decibels relative to full scale) of the sound signal and adds a calibrated offset to display its relative dB SPL value. The application was calibrated by measuring the dBFS measured when a 1 kHz tone is played representing 94 dB SPL according to ANSI S1.1-2013. The measurement microphone takes in an analog signal which is converted using WebAudio API into a pulse code modulation. The RMS is then calculated to determine the volume meter value and by using the formula 20*log(volume) + offset, the dB SPL value of the noise source in the acoustic environment is defined. </p>
     <div class="section">
       <h2>Volume Meter:</h2>
       <meter id="volumeMeter"></meter>
@@ -18,11 +18,11 @@
     </div>    
     <div class="section">
       <div class="measurement">
-        <h3>Real-Time dBFS</h3>
+        <h3>Real-Time dB</h3>
         <div id="dbLevel"></div>
       </div>
       <div class="measurement">
-        <h3>Average dBFS</h3>
+        <h3>Average dB</h3>
         <div id="avgdbLevel"></div>
       </div>
     </div>    <div id="videoWrapper">
@@ -34,7 +34,7 @@
       <button id="startButton">Start Recording</button>
       <button id="stopButton">Stop Recording</button>
     </div>
-    <p>Attach File(s) to Clean Data and Calculate Average dBFS of Trial Runs: </p>
+    <p>Attach File(s) to Clean Data and Calculate Average dB of Trial Runs: </p>
     <div id = "processContainer">
       <input type="file" id="csvFileInput" accept=".csv" multiple>
       <button id="processButton">Process Data</button>
