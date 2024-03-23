@@ -42,18 +42,18 @@ body {
   
   .section {
     display: flex;
-    justify-content: space-between; /* Adjust alignment as needed */
+    justify-content: space-between;
   }
   #volumeMeter{
-    width: 40%; /* Adjust width as needed */
+    width: 40%; 
     height:20px;
   }
   #sineGraph {
-    width: 45%; /* Adjust width as needed */
+    width: 45%;
     height:70px;
   }
   #volumeMeter {
-    margin-right: 10px; /* Adjust spacing between elements */
+    margin-right: 10px;
   }
   
   .measurement {
@@ -62,9 +62,9 @@ body {
     background-color: #f0f0f0;
     border-radius: 10px;
     color:darkblue;
-    font-size: 18px; /* Increased font size */
-    flex: 1; /* Equal width for both divs */
-    margin: 0 10px; /* Adjust margin as needed */
+    font-size: 18px;
+    flex: 1; 
+    margin: 0 10px; 
   }
 
   #dbLevel,#avgdbLevel{
@@ -86,20 +86,20 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 20%; /* Ensure the wrapper takes the full height of the container */
+    height: 20%; 
   }
   
   #webcam {
-    width: 400px; /* Adjust width as needed */
-    height: auto; /* Let the height adjust automatically based on the width */
-    padding: 10px; /* Optional: Add padding for spacing */
+    width: 400px; 
+    height: auto; 
+    padding: 10px; 
   }
   #timer {
     text-align: center;
-    font-size: 36px; /* Increased font size */
+    font-size: 36px; 
     padding: 10px;
-    border-radius: 20px; /* Rounded border */
-    border: 2px solid #ccc; /* Border */
+    border-radius: 20px; 
+    border: 2px solid #ccc; 
   }
   
   #recordingIndicator {
@@ -108,8 +108,8 @@ body {
   }
   
   #btnContainer,#processContainer {
-    text-align: center; /* Center the content horizontally */
-    margin-top: 10px; /* Add top margin for spacing */
+    text-align: center;
+    margin-top: 10px; 
   }
 
   p{
@@ -129,16 +129,16 @@ body {
     font-size: large;
   }
   #startButton {
-    background-color: green; /* Change start button color to green */
+    background-color: green; 
   }
   
   #stopButton {
-    background-color: rgb(164, 7, 7); /* Change stop button color to red */
+    background-color: rgb(164, 7, 7); 
   }
   
   button {
     font-family: monospace;
-    display: inline-block; /* Display buttons inline */
+    display: inline-block; 
     justify-content: center;
     padding: 10px 20px;
     color: #fff;
@@ -148,6 +148,6 @@ body {
   }
   
   button:hover {
-    opacity: 0.8; /* Reduce opacity on hover */
+    opacity: 0.8; 
   }
   
