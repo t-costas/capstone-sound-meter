@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             
             // Calculate average dBFS reading over the last second
             let currentTime = new Date().getTime();
-            if (currentTime - intervalStartTime >= 500) {
+            if (currentTime - intervalStartTime >= 1000) {
                 intervalStartTime = currentTime;
                 if (avgDBCount > 0) {
                     avgdbLevel.innerText = `${(avgDBSum / avgDBCount).toFixed(2)}`;
